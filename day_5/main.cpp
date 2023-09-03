@@ -3,36 +3,13 @@
 #include <sstream>
 
 using namespace std;
+template <typename T>
 
 // Utils
 
-void display_vec(vector<string> vec) {
+void display_vec(vector<T> vec) {
     for (int i = 0; i < vec.size(); i++) {
         cout << vec[i] << ", ";
-    }
-    cout << endl;
-}
-
-void display_vec(vector<char> vec) {
-    for (int i = 0; i < vec.size(); i++) {
-        cout << vec[i] << ", ";
-    }
-    cout << endl;
-}
-
-void display_stack(vector< vector<char> > vec) {
-    for (int i = 0; i < vec.size(); i++) {
-        cout << i+1 << endl;
-        for (int j = 0; j < vec[i].size(); j++) {
-            cout << vec[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
-
-void display_answer(vector< vector<char> > stack) {
-    for (int i = 0; i < stack.size(); i++) {
-        cout << stack[i][0];
     }
     cout << endl;
 }
@@ -51,7 +28,35 @@ vector<string> split_str(string str, char separator) {
 
 // Program
 
-vector< vector<char> > make_stack(vector< vector<char> > stack, string line) {
+class Stack {
+    public:
+        vector< vector<char> > stack;
+        vector<char>& operator[] (int i) {
+            return stack[i];
+        }
+
+        Stack() {
+            stack = vector< vector<char> > (9, vector<char>(0));
+        };
+
+        void display() {
+            for (int i = 0; i < stack.size(); i++) {
+                cout << i+1 << endl;
+                for (int j = 0; j < stack[i].size(); j++) {
+                    cout << stack[i][j] << " ";
+                }
+                cout << endl;
+            }
+        };
+        void answer() {
+            for (int i = 0; i < stack.size(); i++) {
+                cout << stack[i][0];
+            }
+            cout << endl;
+        };
+};
+
+Stack make_stack(Stack stack, string line) {
     for (int i = 0; i < line.length(); i++) {
         if (i%4 == 1 && line[i] != ' ' && !isdigit(line[i])) {
             stack[int(floor(i/4))].push_back(line[i]);
@@ -60,7 +65,7 @@ vector< vector<char> > make_stack(vector< vector<char> > stack, string line) {
     return stack;
 }
 
-vector< vector<char> > apply_many(vector< vector<char> > stack, vector<string> instructions) {
+Stack apply_many(Stack stack, vector<string> instructions) {
     int origin = stoi(instructions[3]) - 1;
     int destination = stoi(instructions[5]) - 1;
     int quantity = stoi(instructions[1]);
@@ -71,7 +76,7 @@ vector< vector<char> > apply_many(vector< vector<char> > stack, vector<string> i
     return stack;
 }
 
-vector< vector<char> > apply_one(vector< vector<char> > stack, vector<string> instructions) {
+Stack apply_one(Stack stack, vector<string> instructions) {
     int origin = stoi(instructions[3]) - 1;
     int destination = stoi(instructions[5]) - 1;
 
@@ -84,9 +89,7 @@ vector< vector<char> > apply_one(vector< vector<char> > stack, vector<string> in
 }
 
 int main(int argc, char* argv[]) {
-    // stack[i][j]; i: stack_number, j: box_id
-    vector< vector<char> > stack (9, vector<char>(0));
-
+    Stack stack;
     string line;
     ifstream file;
     file.open("day_5/input.txt");
@@ -106,7 +109,7 @@ int main(int argc, char* argv[]) {
 
             }
         }
-        display_answer(stack);
+        stack.answer();
         file.close();
     }
     return 0;
