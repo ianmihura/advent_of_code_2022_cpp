@@ -56,36 +56,41 @@ class Stack {
         };
 };
 
-Stack make_stack(Stack stack, string line) {
+void make_stack(Stack *stack, string line) {
     for (int i = 0; i < line.length(); i++) {
         if (i%4 == 1 && line[i] != ' ' && !isdigit(line[i])) {
-            stack[int(floor(i/4))].push_back(line[i]);
+            (*stack)[int(floor(i/4))].push_back(line[i]);
         }
     }
-    return stack;
 }
 
-Stack apply_many(Stack stack, vector<string> instructions) {
+void apply_many(Stack *stack, vector<string> instructions) {
     int origin = stoi(instructions[3]) - 1;
     int destination = stoi(instructions[5]) - 1;
     int quantity = stoi(instructions[1]);
 
-    stack[destination].insert(stack[destination].begin(), stack[origin].begin(), stack[origin].begin() + quantity);
-    stack[origin].erase(stack[origin].begin(), stack[origin].begin() + stoi(instructions[1]));
+    (*stack)[destination].insert(
+        (*stack)[destination].begin(),
+        (*stack)[origin].begin(),
+        (*stack)[origin].begin() + quantity);
 
-    return stack;
+    (*stack)[origin].erase(
+        (*stack)[origin].begin(),
+        (*stack)[origin].begin() + stoi(instructions[1]));
 }
 
-Stack apply_one(Stack stack, vector<string> instructions) {
+void apply_one(Stack *stack, vector<string> instructions) {
     int origin = stoi(instructions[3]) - 1;
     int destination = stoi(instructions[5]) - 1;
 
     for (int i = 0; i < stoi(instructions[1]); i++) {
-        stack[destination].insert(stack[destination].begin(), stack[origin][0]);
-        stack[origin].erase(stack[origin].begin());
-    }
+        (*stack)[destination].insert(
+            (*stack)[destination].begin(),
+            (*stack)[origin][0]);
 
-    return stack;
+        (*stack)[origin].erase(
+            (*stack)[origin].begin());
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -100,12 +105,12 @@ int main(int argc, char* argv[]) {
                 isInstructions = true;
 
             } else if (!isInstructions) {
-                stack = make_stack(stack, line);
+                make_stack(&stack, line);
 
             } else {
                 vector<string> instructions = split_str(line, ' ');
-                // stack = apply_one(stack, instructions);
-                stack = apply_many(stack, instructions);
+                // apply_one(stack, instructions);
+                apply_many(&stack, instructions);
 
             }
         }
